@@ -1,77 +1,72 @@
+let yPos;
+let speed;
+let isTransformed;
+let shapeColor;
+let xPos;
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  // frameRate(24);
-  background(0);
-  rectMode(CENTER);
-  const canvas = document.getElementById("myCanvas");
-  const ctx = canvas.getContext("2d");
-}
-
-let x = 50;
-let y = 50;
-let dx = 2;
-let dy = 2;
-let isCircle = false;
-let color = "blue";
-
-function createGradient() {
-  let gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-  gradient.addColorStop(0, "rgba(255, 0, 150, 1)");
-  gradient.addColorStop(1, "rgba(0, 150, 255, 1)");
-  return gradient;
-}
-
-function drawTriangle() {
-  ctx.save();
-  ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-  ctx.shadowBlur = 15;
-  ctx.shadowOffsetX = 5;
-  ctx.shadowOffsetY = 5;
-  ctx.beginPath();
-  ctx.moveTo(x, y);
-  ctx.lineTo(x - 20, y + 40);
-  ctx.lineTo(x + 20, y + 40);
-  ctx.closePath();
-  ctx.fillStyle = createGradient();
-  ctx.fill();
-  ctx.restore();
-}
-
-function drawCircle() {
-  ctx.save();
-  ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-  ctx.shadowBlur = 15;
-  ctx.shadowOffsetX = 5;
-  ctx.shadowOffsetY = 5;
-  ctx.beginPath();
-  ctx.arc(x, y, 20, 0, Math.PI * 2);
-  ctx.fillStyle = createGradient();
-  ctx.fill();
-  ctx.restore();
+  yPos = height / 2;
+  xPos = width / 2;
+  speed = 0;
+  isTransformed = false;
+  shapeColor = "lightblue";
+  background(20, 24, 82);
 }
 
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  background(20, 24, 82);
 
-  if (isCircle) {
-    drawCircle();
-  } else {
+  // Dibuja el círculo o triángulo
+  fill(shapeColor);
+  if (isTransformed) {
     drawTriangle();
+  } else {
+    drawCircle();
   }
 
-  // Movimiento de la forma
-  x += dx;
-  y += dy;
+  // Movimiento del círculo/triángulo
+  yPos += speed;
 
-  if (x + 20 > canvas.width || x - 20 < 0) {
-    dx = -dx;
-    isCircle = !isCircle;
+  // Condición para el rebote en el suelo
+  if (yPos > height - 50) {
+    speed = -speed;
+    transformShape();
   }
 
-  if (y + 20 > canvas.height || y - 40 < 0) {
-    dy = -dy;
-    isCircle = !isCircle;
+  // Condición para el rebote en la parte superior
+  if (yPos < 50) {
+    speed = -speed;
+    resetShape();
   }
 }
 
-setInterval(draw, 10);
+// Función para dibujar el círculo
+function drawCircle() {
+  ellipse(xPos, yPos, 100, 100);
+}
+
+// Función para dibujar el triángulo
+function drawTriangle() {
+  stroke("purple");
+  strokeWeight(4);
+  fill("purple");
+  triangle(xPos, yPos - 50, xPos - 50, yPos + 50, xPos + 50, yPos + 50);
+}
+
+// Función para cambiar la forma a triángulo y el color a morado
+function transformShape() {
+  isTransformed = true;
+  shapeColor = "purple";
+}
+
+// Función para volver a ser un círculo celeste
+function resetShape() {
+  isTransformed = false;
+  shapeColor = "lightblue";
+}
+
+// clic del mouse
+function mousePressed() {
+  speed = 5;
+}
